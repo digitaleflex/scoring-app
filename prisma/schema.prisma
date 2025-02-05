@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Participant {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  scores    Score[]
+  totalScore Int     @default(0)
+  badge     String?  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Score {
+  id             Int      @id @default(autoincrement())
+  participantId  Int
+  participant    Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  value          Int
+  date           DateTime @default(now())
+}
+
+model Admin {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String  
+}
