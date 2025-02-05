@@ -1,8 +1,15 @@
 import { PrismaClient } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(req) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return Response.json({ error: "Non autorisé" }, { status: 401 });
+  }
+
   try {
     const participants = await prisma.participant.findMany({
       include: { scores: true },
@@ -15,6 +22,11 @@ export async function GET() {
 }
 
 export async function POST(req) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return Response.json({ error: "Non autorisé" }, { status: 401 });
+  }
+
   try {
     const { name } = await req.json();
     if (!name) {
@@ -30,6 +42,11 @@ export async function POST(req) {
 }
 
 export async function DELETE(req) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return Response.json({ error: "Non autorisé" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const participantId = parseInt(searchParams.get("participantId"));
