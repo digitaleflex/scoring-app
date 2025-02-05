@@ -16,32 +16,50 @@ export default function Admin() {
 
   const addParticipant = async (e) => {
     e.preventDefault();
+    if (!newParticipant) return alert("Le nom est requis !");
+    
     const res = await fetch("/admin/api/participants", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newParticipant }),
     });
+
     const data = await res.json();
-    setParticipants([...participants, data]);
-    setNewParticipant("");
+    if (res.ok) {
+      setParticipants([...participants, data]);
+      setNewParticipant("");
+    } else {
+      alert(data.error || "Erreur lors de l'ajout !");
+    }
   };
 
   const addScore = async (participantId) => {
-    if (!score || !day) return;
-    await fetch("/admin/api/scores", {
+    if (!score || !day) return alert("Score et date requis !");
+    
+    const res = await fetch("/admin/api/scores", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ participantId, value: parseInt(score), day }),
     });
-    setScore("");
-    setDay("");
+
+    if (res.ok) {
+      setScore("");
+      setDay("");
+    } else {
+      alert("Erreur lors de l'ajout du score !");
+    }
   };
 
   const deleteParticipant = async (participantId) => {
-    await fetch(`/admin/api/participants?participantId=${participantId}`, {
+    const res = await fetch(`/admin/api/participants?participantId=${participantId}`, {
       method: "DELETE",
     });
-    setParticipants(participants.filter(p => p.id !== participantId));
+
+    if (res.ok) {
+      setParticipants(participants.filter(p => p.id !== participantId));
+    } else {
+      alert("Erreur lors de la suppression !");
+    }
   };
 
   return (
