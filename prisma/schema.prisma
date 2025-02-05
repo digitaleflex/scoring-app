@@ -22,8 +22,10 @@ model Score {
   participantId  Int
   participant    Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
   value          Int
-  date           DateTime @default(now())
+  day            DateTime  @default(now())  // Date du score
+  date           DateTime @default(now())   // Date d'enregistrement du score
 }
+
 
 model Admin {
   id       Int    @id @default(autoincrement())
